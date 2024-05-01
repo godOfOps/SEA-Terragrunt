@@ -12,10 +12,10 @@ remote_state {
     encrypt        = true
     dynamodb_table = "sea-terraform-lock-table"
     s3_bucket_tags = {
-      Created_by = Terragrunt
+      "Created_by" = "Terragrunt"
     }
     dynamodb_table_tags = {
-      Created_by = Terragrunt
+      "Created_by" = "Terragrunt"
     }
   }
 }
