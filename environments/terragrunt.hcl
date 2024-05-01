@@ -6,8 +6,8 @@ remote_state {
   }
 
   config = {
-    bucket = "sea-terragrunt-terraform-state"
-    key = "${path_relative_to_include()}/terraform.tfstate"
+    bucket         = "sea-terragrunt-terraform-state"
+    key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = "us-west-2"
     encrypt        = true
     dynamodb_table = "sea-terraform-lock-table"
@@ -21,7 +21,7 @@ remote_state {
 }
 
 generate "provider" {
-  path = "provider.tf"
+  path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
 
   contents = <<EOF
