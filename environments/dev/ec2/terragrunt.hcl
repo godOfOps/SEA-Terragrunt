@@ -36,6 +36,7 @@ dependency "vpc" {
 
   mock_outputs = {
     vpc_id             = "vpc-1234"
-    private_subnet_ids = ["subnet-1234", "subnet-5678"]
+    private_subnet_ids = ["pub-subnet-1234", "pub-subnet-5678"]
+    public_subnet_ids = ["pri-subnet-1234", "pri-subnet-5678"]
   }
 }
