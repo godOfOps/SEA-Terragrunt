@@ -15,8 +15,8 @@ include "env" {
 inputs = {
   env                      = include.env.locals.env
   vpc_id                   = dependency.vpc.outputs.vpc_id
-  public_subnet_ids               = dependency.vpc.outputs.public_subnet_ids
-  private_subnet_ids               = dependency.vpc.outputs.private_subnet_ids
+  public_subnet_ids        = dependency.vpc.outputs.public_subnet_ids
+  private_subnet_ids       = dependency.vpc.outputs.private_subnet_ids
   ingress_ports_elb        = [80, 443]
   ingress_ports_ec2        = [80]
   instance_type            = "t2.micro"
