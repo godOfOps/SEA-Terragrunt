@@ -24,6 +24,7 @@ inputs = {
   volume_size              = 10   # Secondary EBS Volume size in GB
   average_cpu_util         = 70.0 # Average CPU Utilization to trigger ASG Scaling action
   request_count_per_target = 10.0 # Average Request Count Per Target to trigger ASG Scaling action
+  notification_email_ids = ["ankitkrsingh13@gmail.com"]
   scaling_config = {
     min_size         = 2
     max_size         = 5
