@@ -1,0 +1,83 @@
+- name: "fetching instance details"
+  become: false
+  hosts: localhost
+  vars:
+    region: "us-west-2"
+    asg_name: "dev-webapp-asg"
+    ssh_key_filename: "id_ed25519_sea"
+
+  tasks:
+    - name: "generate temporary SSH key {{ssh_key_filename}} to use with EC2 instance connect endpoint"
+      openssh_keypair:
+        path: "/tmp/{{ssh_key_filename}}"
+        type: ed25519
+        state: present
+        force: no
+      register: key_details
+
+    - name: "gathering instance details"
+      amazon.aws.ec2_instance_info:
+        region: "{{ region }}"
+        filters:
+          "tag:aws:autoscaling:groupName": "{{ asg_name }}"
+          "tag:Environment": "dev"
+          instance-state-name: [ "running" ]
+      register: instance_details
+ 
+
+    - name: "creating dynamic inventory"
+      add_host:
+        groups: "asg_instances"
+        hostname: "{{ item.instance_id }}"
+        ansible_ssh_user: "ec2-user"
+        ansible_ssh_host: '{{ item.instance_id }}'
+        ansible_ssh_port: "22"
+        ansible_ssh_private_key_file: "{{ key_details.filename }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o ProxyCommand='aws ec2-instance-connect open-tunnel --instance-id %h'"
+      loop: "{{ instance_details.instances }}"
+
+    - name: "Set temporary key for Ec2 ssh - 60s"
+      command: aws ec2-instance-connect send-ssh-public-key --instance-id {{ item.instance_id }} --instance-os-user ec2-user --ssh-public-key file://{{ key_details.filename }}.pub
+      loop: "{{ instance_details.instances }}"
+
+- name: "Deploying a site from github repo"
+  hosts: all
+  become: true
+  serial: 1
+  vars:
+    repo_url: https://github.com/kubowania/2048.git #https://github.com/erdincakgun/RockPaperScissors.git #https://github.com/kubowania/2048.git
+    document_root: "/var/www/html/"
+    packages:
+      - httpd
+      - git
+
+
+  tasks:
+    - name: "installing packages"
+      yum: 
+        name: "{{ packages }}"
+        state: present
+
+    - name: "clean document root"
+      file:
+        path: "{{ document_root }}"
+        state: absent
+    - name: "clean document root"
+      file:
+        path: "{{ document_root }}"
+        state: directory
+
+    - name: "cloning from repo to document root"
+      git: 
+        repo: "{{ repo_url }}"
+        dest: "{{ document_root }}"
+      notify:
+        - apache-reload
+
+ 
+  handlers:
+    - name: "apache-reload"
+      service:
+        name: httpd
+        state: reloaded
+        enabled: true
