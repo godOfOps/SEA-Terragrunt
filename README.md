@@ -21,6 +21,7 @@
     terragrunt run-all plan
     terragrunt run-all apply
     ```
+* Terragrunt will **auto-create the S3 Buckets and DynamoDB Table** to maintain the trraform state file and provision the infrastructure.
 
 # Ansible Setup:
 Ansible Playbook setup configure/deploy Web Application in ASG EC2 Instances is [here](ansible-setup.md)
